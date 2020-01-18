@@ -2,7 +2,7 @@
 {
     public interface ISessionKeyManager
     {
-        string GenerateNewSessionKey();
+        string GenerateNewSessionKey(string userID);
         void ReleaseSessionKey(string key);
     }
 }

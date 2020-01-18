@@ -8,22 +8,25 @@ namespace SessionKeyManager
     public class HashedSessionKeyManager : ISessionKeyManager
     {
         private Random random;
-        private SHA256 sha;
+        private HashAlgorithm algorithm;
 
         private int counter;
         public HashedSessionKeyManager()
         {
             random = new Random();
-            sha = SHA256.Create();
+            algorithm = SHA256.Create();
             counter = 0;
         }
-        public string GenerateNewSessionKey()
+        public string GenerateNewSessionKey(string userID)
         {
-            var s = $"{counter}..{random.Next()}";
+            var s = $"{userID}.{counter}.{random.Next()}";
             Interlocked.Increment(ref counter);
-            return Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(s)));
+            return Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(s)));
         }
-
+        public string RefreshSessionKey(string userID) 
+        {
+            return GenerateNewSessionKey(userID);
+        }
         public void ReleaseSessionKey(string key)
         {
 

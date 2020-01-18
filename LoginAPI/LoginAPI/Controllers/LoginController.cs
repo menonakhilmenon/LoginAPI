@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using LoginAPI.Helpers;
 using LoginAPI.Grpc;
 using SessionKeyManager;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LoginAPI.Controllers
 {
@@ -23,32 +24,50 @@ namespace LoginAPI.Controllers
         }
 
         [Route("login")]
+        public string Get() 
+        {
+            return "Hello";
+        }
+
+        [Authorize(AuthenticationSchemes = JwtAuthenticationHelper.JwtAuthenticationScheme)]
+        [HttpPost]
+        [Route("secret")]
+        public string Auth() 
+        {
+            Console.WriteLine(HttpContext.GetUserIDFromJWTHeader());
+            return "Success";
+        }
+
+
+
+        [Route("login")]
         [HttpPost]
         public async Task<ClientReply> Auth([FromBody]ClientLoginInfo loginInfo)
         {
+            HttpContext.GetUserIDFromJWTHeader();
             Console.WriteLine($"{loginInfo.userName} has requested login..");
             var op = await _dataAccess.GetUserInfo(loginInfo.userName);
             if (op.password == loginInfo.password)
             {
-                string sessKey = _sessionKeyManager.GenerateNewSessionKey();
-                var res = await _serverCommunicator.SendTokenToServer(loginInfo.userName, sessKey);
+                string sessKey = _sessionKeyManager.GenerateNewSessionKey(loginInfo.userName);
+                //var res = await _serverCommunicator.SendTokenToServer(loginInfo.userName, sessKey);
 
-                if (res.ReplyMessage == 0)
-                {
+                //if (res.ReplyMessage == 0)
+                //{
                     return new ClientReply()
                     {
                         token = sessKey,
                         Error = (int)ErrorMessage.NoError
                     };
-                }
-                else
-                {
-                    return new ClientReply
-                    {
-                        token = "MasterServer Timed out",
-                        Error = (int)ErrorMessage.Timeout
-                    };
-                }
+                //}
+                //else
+                //{
+                //    return new ClientReply
+                //    {
+                //        token = "MasterServer Timed out",
+                //        Error = (int)ErrorMessage.Timeout
+                //    };
+                //}
             }
             else 
             {

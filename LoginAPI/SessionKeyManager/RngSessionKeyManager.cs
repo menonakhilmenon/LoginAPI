@@ -17,7 +17,7 @@ namespace SessionKeyManager
             random = new Random(DateTime.Now.Millisecond);
         }
 
-        public string GenerateNewSessionKey()
+        public string GenerateNewSessionKey(string userID)
         {
             if (FreeKeys.Count == 0)
             {

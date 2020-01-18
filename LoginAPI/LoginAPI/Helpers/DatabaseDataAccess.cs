@@ -33,11 +33,11 @@ namespace LoginAPI.Helpers
                 string sQuery = "SELECT * FROM user WHERE username = @username";
                 conn.Open();
                 var result = await conn.QueryAsync<ClientInfo>(sQuery, new { username = userName });
-                ClientInfo clientInfo = result.FirstOrDefault();
                 if (result.Count() == 0)
                 {
                     return null;
                 }
+                ClientInfo clientInfo = result.FirstOrDefault();
                 return new ClientInfo()
                 {
                     userName = clientInfo.userName,

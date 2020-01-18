@@ -31,7 +31,10 @@ namespace LoginAPI
             services.AddControllers();
             //Dependency Injection
 
-            services.AddSingleton<ISessionKeyManager, HashedSessionKeyManager>();
+            services.AddAuthentication().AddJwtAuthentication(Configuration.GetValue<string>("Jwt:Key"));
+            services.AddAuthorization();
+
+            services.AddSingleton<ISessionKeyManager, JWTSessionKeyManager>();
             services.AddTransient<IServerCommunicator,ServerCommunicator>();
             services.AddTransient<IDataAccess, DatabaseDataAccess>();
             services.AddTransient<IDatabaseHelper, MySQLHelper>();
@@ -46,7 +49,10 @@ namespace LoginAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseRouting();
 
