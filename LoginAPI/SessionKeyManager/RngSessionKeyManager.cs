@@ -5,10 +5,9 @@ namespace SessionKeyManager
 {
     public class RngSessionKeyManager : ISessionKeyManager
     {
-        private HashSet<string> SessionKeys;
-        private Stack<string> FreeKeys;
-
-        Random random;
+        private readonly HashSet<string> SessionKeys;
+        private readonly Stack<string> FreeKeys;
+        readonly Random random;
 
         public RngSessionKeyManager() 
         {

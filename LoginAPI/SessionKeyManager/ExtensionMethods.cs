@@ -33,6 +33,12 @@ namespace SessionKeyManager
             return null;
         }
 
+        /// <summary>
+        /// Helper that adds jwt authentication to the AuthenticationBuilder with options validating issuer key and save token set to true
+        /// </summary>
+        /// <param name="builder">The application builder</param>
+        /// <param name="key">The unhashed key used in signing the token</param>
+        /// <returns></returns>
         public static AuthenticationBuilder AddJwtAuthentication(this AuthenticationBuilder builder,string key)
         {
             var signingKey = new SymmetricSecurityKey(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(key)));
