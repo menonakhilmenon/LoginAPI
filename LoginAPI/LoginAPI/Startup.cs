@@ -1,18 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LoginAPI.Grpc;
 using LoginAPI.Helpers;
 using SessionKeyManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using LoginAPI.Grpc;
 
 namespace LoginAPI
 {
@@ -31,14 +24,18 @@ namespace LoginAPI
             services.AddControllers();
             //Dependency Injection
 
-            services.AddAuthentication().AddJwtAuthentication(Configuration.GetValue<string>("Jwt:Key"));
+            var jwtConfig = Configuration.GetSection("Jwt").Get<JwtConfig>();
+
+            services.AddSingleton(jwtConfig);
+            services.AddAuthentication().AddJwtAuthenticationWithKeyAndIssuer(jwtConfig.Key,jwtConfig.Issuer);
             services.AddAuthorization();
 
+
+
             services.AddSingleton<ISessionKeyManager, JWTSessionKeyManager>();
-            services.AddTransient<IServerCommunicator,ServerCommunicator>();
             services.AddTransient<IDataAccess, DatabaseDataAccess>();
             services.AddTransient<IDatabaseHelper, MySQLHelper>();
-
+            services.AddGrpc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,6 +58,7 @@ namespace LoginAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapGrpcService<LoginService>();
             });
         }
     }

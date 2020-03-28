@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option csharp_namespace = "LoginAPI.Protos";
+service LoginService{
+	rpc LoginUser (LoginRequest) returns (LoginReply);
+	rpc ActivateUser (ActivationRequest) returns (ActivationReply);
+	rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
+}
+message LoginRequest{
+	string email = 1;
+	string password = 2;
+}
+
+message CreateUserRequest{
+	string email = 1;
+	string password = 2;
+	string name = 3;
+}
+
+message LoginReply{
+	string name =1;
+	bool activated =2;
+	ErrorCode errorCode = 3;
+}
+message ActivationReply{
+	ErrorCode errorCode = 1;
+}
+message CreateUserReply{
+	ErrorCode errorCode = 1;
+}
+
+message ActivationRequest{
+	string email = 1;
+	string activationKey = 2;
+}
+
+enum ErrorCode{
+	SUCCESS = 0;
+	FAIL= 1;
+	FAIL_DUPLICATE_EMAIL=2;
+	FAIL_UNKNOWN = 3;
+}

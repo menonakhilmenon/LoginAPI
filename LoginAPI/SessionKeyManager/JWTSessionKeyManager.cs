@@ -1,76 +1,61 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Collections.Generic;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
 namespace SessionKeyManager
 {
     public class JWTSessionKeyManager : ISessionKeyManager
     {
-        private readonly HashAlgorithm hashAlgorithm;
-        private readonly IConfiguration _config;
         private readonly SigningCredentials credentials;
         private readonly string issuer;
-
-        public const string USERID_STRING = "userID";
-
-        private readonly HashSet<string> refreshTokens = new HashSet<string>();
+        private readonly int secondsBeforeExpire;
+        private readonly JwtSecurityTokenHandler jwtSecurityTokenHandler;
 
 
-        public JWTSessionKeyManager(IConfiguration config)
+
+        public JWTSessionKeyManager(JwtConfig config)
         {
-            _config = config;
 
-            issuer = _config["Jwt:Issuer"];
-            hashAlgorithm = SHA256.Create();
+            issuer = config.Issuer;
+            secondsBeforeExpire = config.Duration;
+            var key = Encoding.UTF8.GetBytes(config.Key);
 
-            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
-            var securityKey = new SymmetricSecurityKey(hashAlgorithm.ComputeHash(key));
+            var securityKey = new SymmetricSecurityKey(key);
 
+            jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
             credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
-        
+
         public string GenerateNewSessionKey(string userID)
         {
-            refreshTokens.Add(userID);
-
             string key = GenerateJSONWebToken(userID);
-            Console.WriteLine(key);
             return key;
         }
 
         public void ReleaseSessionKey(string userID)
         {
-            if (refreshTokens.Contains(userID)) 
-            {
-                refreshTokens.Remove(userID);
-            }
+            
         }
 
-        public string RefreshSessionKey(string userID) 
+        public string RefreshSessionKey(string userID)
         {
-            if (refreshTokens.Contains(userID)) 
-            {
-                return GenerateJSONWebToken(userID);
-            }
-            return "Session key was not found";
+            return GenerateJSONWebToken(userID);
         }
 
 
         private string GenerateJSONWebToken(string userInfo)
         {
-            
+
             var token = new JwtSecurityToken(
-              issuer : this.issuer,
-              claims: new[] {new Claim(USERID_STRING,userInfo)},
-              expires: DateTime.Now.AddMinutes(120),
+              issuer: issuer,
+              claims: new[] { new Claim(JwtExtensionsAndConstants.USERID_STRING, userInfo) },
+              expires: DateTime.Now.AddSeconds(secondsBeforeExpire),
               signingCredentials: credentials);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return jwtSecurityTokenHandler.WriteToken(token);
         }
 
     }

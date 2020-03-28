@@ -1,0 +1,27 @@
+﻿@model ConfirmViewModel
+@{
+    ViewData["Title"] = "ConfirmUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>ConfirmUser</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post" asp-action="ConfirmUser">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="activationKey" class="control-label"></label>
+                <input asp-for="activationKey" class="form-control" />
+                <span asp-validation-for="activationKey" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Confirm User" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

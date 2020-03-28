@@ -7,9 +7,11 @@ namespace LoginAPI.Models
 {
     public class ClientInfo
     {
-        public int userID;
+        public string userID;
         public string userName;
         public string email;
         public string password;
+        public bool activated;
+        public string otp;
     }
 }
