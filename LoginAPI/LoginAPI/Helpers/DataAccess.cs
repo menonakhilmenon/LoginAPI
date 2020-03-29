@@ -47,7 +47,7 @@ namespace LoginAPI.Helpers
             throw new NotImplementedException();
         }
 
-        public Task<bool> SetUserActivation(string email, bool state)
+        public Task<bool> ActivateUser(string email)
         {
             throw new NotImplementedException();
         }
@@ -55,6 +55,26 @@ namespace LoginAPI.Helpers
         public Task<bool> CreateUser(ClientInfo clientInfo)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<bool> ChangeOTP(string userID, string otp)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> SetPassword(string userID, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ChangePasswordOTP(string userID, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ComparePassword(string unhashedPassword, string hashedPassword)
+        {
+            return unhashedPassword == hashedPassword;
         }
     }
 }

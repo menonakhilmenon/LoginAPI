@@ -5,10 +5,27 @@ service LoginService{
 	rpc LoginUser (LoginRequest) returns (LoginReply);
 	rpc ActivateUser (ActivationRequest) returns (ActivationReply);
 	rpc CreateUser (CreateUserRequest) returns (CreateUserReply);
+	rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordReply);
+	rpc ResetPassword (ResetPasswordRequest) returns (ResetPasswordReply);
+	rpc SendPasswordOTP (SendPasswordOTPRequest) returns (SendPasswordOTPReply);
+	rpc ResendOTP (ResendOTPRequest) returns (ResendOTPReply);
 }
+
+message SendPasswordOTPRequest{
+	string email =1;
+}
+message SendPasswordOTPReply{
+	ErrorCode errorCode =1;
+}
+
 message LoginRequest{
 	string email = 1;
 	string password = 2;
+}
+message LoginReply{
+	string name =1;
+	bool activated =2;
+	ErrorCode errorCode = 3;
 }
 
 message CreateUserRequest{
@@ -16,19 +33,39 @@ message CreateUserRequest{
 	string password = 2;
 	string name = 3;
 }
-
-message LoginReply{
-	string name =1;
-	bool activated =2;
-	ErrorCode errorCode = 3;
-}
-message ActivationReply{
-	ErrorCode errorCode = 1;
-}
 message CreateUserReply{
 	ErrorCode errorCode = 1;
 }
 
+message ChangePasswordRequest{
+	string email = 1;
+	string password = 2;
+	string newPassword =3;
+}
+message ChangePasswordReply{
+	ErrorCode errorCode =1;
+}
+
+message ResetPasswordRequest{
+	string email = 1;
+	string otp = 2;
+	string newPassword =3;
+}
+message ResetPasswordReply{
+	ErrorCode errorCode =1;
+}
+
+
+message ResendOTPRequest{
+	string email = 1;
+}
+message ResendOTPReply{
+	ErrorCode errorCode =1;
+}
+
+message ActivationReply{
+	ErrorCode errorCode = 1;
+}
 message ActivationRequest{
 	string email = 1;
 	string activationKey = 2;

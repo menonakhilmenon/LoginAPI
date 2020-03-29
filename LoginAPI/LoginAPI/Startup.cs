@@ -31,6 +31,7 @@ namespace LoginAPI
             services.AddAuthorization();
 
 
+            services.AddSingleton<EmailHelper>();
 
             services.AddSingleton<ISessionKeyManager, JWTSessionKeyManager>();
             services.AddTransient<IDataAccess, DatabaseDataAccess>();

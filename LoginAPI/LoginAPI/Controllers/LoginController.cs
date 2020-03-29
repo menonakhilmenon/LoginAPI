@@ -47,7 +47,7 @@ namespace LoginAPI.Controllers
         {
             Console.WriteLine($"{loginInfo.userName} has requested login..");
             var op = await _dataAccess.GetUserByEmail(loginInfo.userName);
-            if (op.password == loginInfo.password)
+            if (_dataAccess.ComparePassword(loginInfo.password,op.password))
             {
                 string sessKey = _sessionKeyManager.GenerateNewSessionKey(op.userID);
 

@@ -13,5 +13,6 @@ namespace LoginAPI.Models
         public string password;
         public bool activated;
         public string otp;
+        public string passwordOtp;
     }
 }
