@@ -7,13 +7,14 @@ namespace LoginAPI.Helpers
 {
     public class EmailHelper
     {
+
         public async Task<bool> SendForgetPasswordMail(string emailID,string otp) 
         {
-            return false;
+            return await Task.FromResult(true);
         }
         public async Task<bool> SendActivationMail(string emailID,string otp) 
         {
-            return false;
+            return await Task.FromResult(true);
         }
     }
 }

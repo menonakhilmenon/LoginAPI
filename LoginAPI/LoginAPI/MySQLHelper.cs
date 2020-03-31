@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using System.Configuration;
 using Dapper;
+using LoginAPI.Helpers;
 
 namespace LoginAPI
 {
@@ -20,20 +21,22 @@ namespace LoginAPI
     }
     public class MySQLHelper : IDatabaseHelper
     {
-        public IConfiguration _config;
-        public MySQLHelper(IConfiguration config)
+        private readonly DBConfig dbConfig;
+
+        public MySQLHelper(DBConfig dBConfig)
         {
-            _config = config;
+            this.dbConfig = dBConfig;
         }
+
         public string CnnVal(string name) 
         {
-            return _config.GetConnectionString(name);
+            return dbConfig.ConnectionString;
         }
         public IDbConnection Connection
         {
             get
             {
-                return new MySqlConnection(_config.GetConnectionString("DefaultConnection"));
+                return new MySqlConnection(dbConfig.ConnectionString);
             }
         }
 

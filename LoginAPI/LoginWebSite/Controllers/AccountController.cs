@@ -167,11 +167,43 @@ namespace LoginWebSite.Controllers
         }
 
         [HttpPost]
-        public IActionResult ForgotPassword(ForgotPasswordModel forgotPasswordModel) 
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel) 
         {
-            Console.WriteLine("Sending Email");
+            if (ModelState.IsValid) 
+            {
+                var res = await loginClient.SendPasswordOTPAsync(new LoginAPI.Protos.SendPasswordOTPRequest { Email = forgotPasswordModel.Email });
+            }
+            return RedirectToAction(nameof(ResetPassword));
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword() 
+        {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel resetPasswordModel) 
+        {
+            if (!ModelState.IsValid) 
+            {
+                return RedirectToAction(nameof(Login));
+            }
+
+            var res = await loginClient.ResetPasswordAsync(new LoginAPI.Protos.ResetPasswordRequest 
+            { 
+                Email = resetPasswordModel.email, 
+                NewPassword = resetPasswordModel.newPassword,
+                Otp = resetPasswordModel.otp 
+            });
+            if(res.ErrorCode == LoginAPI.Protos.ErrorCode.Success) 
+            {
+                return RedirectToAction(nameof(Login));
+            }
+            return View();
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Logout() 
@@ -189,6 +221,17 @@ namespace LoginWebSite.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        private string GetEmailFromContext() 
+        {
+            var emailClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+            if (emailClaim != null) 
+            {
+                return emailClaim.Value;
+            }
+            return null;
         }
     }
 }

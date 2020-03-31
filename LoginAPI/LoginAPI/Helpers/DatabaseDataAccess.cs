@@ -20,10 +20,10 @@ namespace LoginAPI.Helpers
             hasher = SHA256.Create();
         }
 
-        public async Task<bool> ActivateUser(string email)
+        public async Task<bool> ActivateUser(string userID)
         {
             return await _helper.CallStoredProcedureExec("ActivateUser", new DynamicParameters()
-                .AddParameter("userEmail", email)
+                .AddParameter("userID", userID)
                 ) > 0;
         }
 

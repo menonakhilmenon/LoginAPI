@@ -28,7 +28,7 @@ namespace LoginAPI.Controllers
             var id = HttpContext.GetUserIDFromJWTHeader();
             Console.WriteLine($"{id} has requested refresh token");
             var sessionKey = _sessionKeyManager.RefreshSessionKey(id);
-            if (string.IsNullOrEmpty(sessionKey)) 
+            if (string.IsNullOrEmpty(sessionKey))
             {
                 return new ClientReply
                 {
@@ -45,24 +45,44 @@ namespace LoginAPI.Controllers
         [HttpPost]
         public async Task<ClientReply> Auth([FromBody]ClientLoginInfo loginInfo)
         {
-            Console.WriteLine($"{loginInfo.userName} has requested login..");
-            var op = await _dataAccess.GetUserByEmail(loginInfo.userName);
-            if (_dataAccess.ComparePassword(loginInfo.password,op.password))
+            try
             {
-                string sessKey = _sessionKeyManager.GenerateNewSessionKey(op.userID);
+                Console.WriteLine($"{loginInfo.userName} has requested login..");
+                var op = await _dataAccess.GetUserByEmail(loginInfo.userName);
+                if (_dataAccess.ComparePassword(loginInfo.password, op.password))
+                {
+                    string sessKey = _sessionKeyManager.GenerateNewSessionKey(op.userID);
 
-                return new ClientReply()
+                    return new ClientReply()
+                    {
+                        token = sessKey,
+                        Error = (int)ErrorMessage.NoError
+                    };
+                }
+                else if (!op.activated)
                 {
-                    token = sessKey,
-                    Error = (int)ErrorMessage.NoError
-                };
+                    return new ClientReply()
+                    {
+                        token = null,
+                        Error = (int)ErrorMessage.UnActivated
+                    };
+                }
+                else
+                {
+                    return new ClientReply()
+                    {
+                        token = null,
+                        Error = (int)ErrorMessage.InvalidCredentials
+                    };
+                }
             }
-            else 
+            catch (Exception e)
             {
-                return new ClientReply()
+                Console.WriteLine(e.ToString());
+                return new ClientReply
                 {
-                    token = "Invalid Credentials",
-                    Error = (int)ErrorMessage.InvalidCredentials
+                    token = null,
+                    Error = (int)ErrorMessage.Unknown
                 };
             }
         }

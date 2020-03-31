@@ -26,7 +26,7 @@ namespace LoginAPI.Grpc
             try
             {
                 var op = await dataAccess.GetUserByEmail(request.Email);
-                if (op != null && op.password == request.Password)
+                if (op != null && dataAccess.ComparePassword(request.Password,op.password))
                 {
                     return new LoginReply {  Activated = op.activated, Name = op.userName, ErrorCode = ErrorCode.Success };
                 }
@@ -50,7 +50,7 @@ namespace LoginAPI.Grpc
 
                 if (op!=null && op.otp == request.ActivationKey) 
                 {
-                    if (await dataAccess.ActivateUser(request.Email)) 
+                    if (await dataAccess.ActivateUser(op.userID)) 
                     {
                         return new ActivationReply { ErrorCode = ErrorCode.Success };
                     }
@@ -126,7 +126,7 @@ namespace LoginAPI.Grpc
             try
             {
                 var res = await dataAccess.GetUserByEmail(request.Email);
-                if (res != null && res.passwordOtp == request.Otp)
+                if (res != null && res.forgetPasswordOtp == request.Otp)
                 {
                     if (await dataAccess.SetPassword(res.userID, request.NewPassword))
                     {

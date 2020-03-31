@@ -11,9 +11,14 @@ namespace LoginAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+            .SetBasePath(env.ContentRootPath)
+            .AddJsonFile("Config/appsettings.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -25,8 +30,9 @@ namespace LoginAPI
             //Dependency Injection
 
             var jwtConfig = Configuration.GetSection("Jwt").Get<JwtConfig>();
-
+            var dbConfig = Configuration.GetSection("Database").Get<DBConfig>();
             services.AddSingleton(jwtConfig);
+            services.AddSingleton(dbConfig);
             services.AddAuthentication().AddJwtAuthenticationWithKeyAndIssuer(jwtConfig.Key,jwtConfig.Issuer);
             services.AddAuthorization();
 

@@ -16,6 +16,7 @@ namespace LoginAPI.Models
         NetworkError,
         Timeout,
         InvalidCredentials,
+        UnActivated,
         Unknown
     }
 }

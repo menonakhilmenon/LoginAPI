@@ -6,6 +6,8 @@
 
 <h1>ConfirmUser</h1>
 
+<h2>The activation key has been sent to the email.</h2>
+
 <div class="row">
     <div class="col-md-4">
         <form method="post" asp-action="ConfirmUser">
@@ -17,6 +19,9 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Confirm User" class="btn btn-primary" />
+            </div>
+            <div class="form-group">
+                <a asp-action="ResendOTP">Resend OTP</a>
             </div>
         </form>
     </div>
